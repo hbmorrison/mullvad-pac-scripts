@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
   push:
   schedule:
-    - cron: 44 */6 * * *
+    - cron: 11 */8 * * *
 
 jobs:
   run:
@@ -13,35 +13,44 @@ jobs:
     timeout-minutes: 10
 
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-python@v4
+    - uses: actions/checkout@v4
+    - uses: actions/setup-python@v5
       with:
-        python-version: '3.10'
+        python-version: '3.12'
         cache: 'pip'
 
-    - name: Clone and setup repo
+    - name: Set build information
+      id: info
       run: |
-        git clone "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" repo
-        cd repo
-        git config user.name "${{ github.actor }}"
-        git config user.email "${{ github.actor }}@users.noreply.github.com"
-        git checkout list
-        git pull
-        rm *.js
-        echo "TAG_NAME=$(date +"%Y-%m-%dT%H-%M-%S")" >> $GITHUB_ENV
+        echo "date=$(date +'%Y-%m-%dT%H-%M-%S')" >> $GITHUB_OUTPUT
 
-    - name: Download and install dependencies
+    - name: Install python dependencies
       run: |
-        wget https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-City.mmdb
         pip3 install -r requirements.txt
 
-    - name: Create PAC scripts
+    - name: Clone the scripts branch
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ github.repository }}
+        ref: scripts
+        path: scripts
+
+    - name: Remove previously created scripts
+      run: |
+        cd scripts
+        rm *.pac || true
+
+    - name: Create new PAC scripts
       run: |
         python3 create-pac-scripts.py
 
-    - name: Push result to "scripts" branch
+    - name: Push result to scripts branch
       run: |
-        cd repo
+        cd scripts
         git add .
-        git commit -m "${{ env.TAG_NAME }}"
-        git push -u origin scripts
+        git config user.name "${{ github.actor }}"
+        git config user.email "${{ github.actor }}@users.noreply.github.com"
+        git diff --cached --exit-code &> /dev/null || echo Committing
+        git diff --cached --exit-code &> /dev/null || git commit -am "${{ steps.info.outputs.date }}"
+        git diff --exit-code origin/scripts &> /dev/null || echo Pushing
+        git diff --exit-code origin/scripts &> /dev/null || git push -u origin scripts
