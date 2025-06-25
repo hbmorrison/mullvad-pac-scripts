@@ -1,0 +1,47 @@
+name: Publish Mullvad PAC scripts
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+  push:
+  schedule:
+    - cron: 44 */6 * * *
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+    - uses: actions/checkout@v3
+    - uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        cache: 'pip'
+
+    - name: Clone and setup repo
+      run: |
+        git clone "https://${{ github.actor }}:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}" repo
+        cd repo
+        git config user.name "${{ github.actor }}"
+        git config user.email "${{ github.actor }}@users.noreply.github.com"
+        git checkout list
+        git pull
+        rm *.js
+        echo "TAG_NAME=$(date +"%Y-%m-%dT%H-%M-%S")" >> $GITHUB_ENV
+
+    - name: Download and install dependencies
+      run: |
+        wget https://github.com/P3TERX/GeoLite.mmdb/raw/download/GeoLite2-City.mmdb
+        pip3 install -r requirements.txt
+
+    - name: Create PAC scripts
+      run: |
+        python3 create-pac-scripts.py
+
+    - name: Push result to "scripts" branch
+      run: |
+        cd repo
+        git add .
+        git commit -m "${{ env.TAG_NAME }}"
+        git push -u origin scripts
