@@ -138,6 +138,8 @@ function FindProxyForURL(url, host) {
         "SOCKS5 pl-waw-wg-socks5-202.relays.mullvad.net:1080; DIRECT",
         "SOCKS5 pt-lis-wg-socks5-201.relays.mullvad.net:1080; DIRECT",
         "SOCKS5 pt-lis-wg-socks5-202.relays.mullvad.net:1080; DIRECT",
+        "SOCKS5 pt-lis-wg-socks5-301.relays.mullvad.net:1080; DIRECT",
+        "SOCKS5 pt-lis-wg-socks5-302.relays.mullvad.net:1080; DIRECT",
         "SOCKS5 ro-buh-wg-socks5-001.relays.mullvad.net:1080; DIRECT",
         "SOCKS5 ro-buh-wg-socks5-002.relays.mullvad.net:1080; DIRECT",
         "SOCKS5 se-got-wg-socks5-001.relays.mullvad.net:1080; DIRECT",
