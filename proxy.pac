@@ -1,4 +1,4 @@
-var proxyDurationMilliseconds = 15;
+var proxyDurationMilliseconds = 900000;
 var currentProxyIndex = 0;
 var currentProxyTime = 0;
 
