@@ -1,6 +1,7 @@
 import requests
 
 duration_minutes = 15
+duration_milliseconds = duration_minutes * 60 * 1000
 
 proxies = requests.get('https://api.mullvad.net/www/relays/wireguard/').json()
 
@@ -19,12 +20,15 @@ for proxy in proxies:
 header = open('script-header.pac', 'r')
 footer = open('script-footer.pac', 'r')
 
-with open('scripts/proxy.pac', 'a') as gdpr:
-    gdpr.write('var proxyDurationMilliseconds = %d;\n' % duration_minutes * 60 * 1000);
-    gdpr.write(header.read())
-    for item in proxy_hosts_gdpr:
-        gdpr.write('        "SOCKS5 %s; DIRECT",\n' % item)
-    gdpr.write(footer.read())
+pac_script = open('scripts/proxy.pac', 'a')
+
+pac_script.write('var proxyDurationMilliseconds = %d;\n' % duration_milliseconds);
+pac_script.write(header.read())
+for item in proxy_hosts_gdpr:
+    pac_script.write('        "SOCKS5 %s; DIRECT",\n' % item)
+pac_script.write(footer.read())
+
+pac_script.close()
 
 header.close()
 footer.close()
