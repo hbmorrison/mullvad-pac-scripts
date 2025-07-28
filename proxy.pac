@@ -187,8 +187,6 @@ function FindProxyForURL(url, host) {
     ];
 
     if (shExpMatch(host, "*.ts.net")) { return "DIRECT"; }
-    if (shExpMatch(host, "*.home")) { return "DIRECT"; }
-    if (shExpMatch(host, "*.lan")) { return "DIRECT"; }
 
     var newProxyTime = new Date().getTime();
     var newProxyIndex = Math.floor(Math.random() * proxyList.length);
