@@ -25,12 +25,10 @@ proxy at random when the browser makes its first request.
 
 The script will not return a proxy for any requests to the following URL hosts:
 
-- `*.home`
-- `*.lan`
 - `*.ts.net`
 
-This is a crude way to allow direct connections to local services and services
-that are made available over Tailscale.
+This is a crude way to allow direct connections to services that are made
+available over Tailscale.
 
 ## Usage
 
