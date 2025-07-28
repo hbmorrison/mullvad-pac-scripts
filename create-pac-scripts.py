@@ -1,5 +1,7 @@
 import requests
 
+duration_minutes = 15
+
 proxies = requests.get('https://api.mullvad.net/www/relays/wireguard/').json()
 
 with open('gdpr-like-countries.txt', 'r') as file:
@@ -18,6 +20,7 @@ header = open('script-header.pac', 'r')
 footer = open('script-footer.pac', 'r')
 
 with open('scripts/proxy.pac', 'a') as gdpr:
+    gdpr.write('var proxyDurationMilliseconds = %d;\n' % duration_minutes * 60 * 1000);
     gdpr.write(header.read())
     for item in proxy_hosts_gdpr:
         gdpr.write('        "SOCKS5 %s; DIRECT",\n' % item)
